@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanController : MonoBehaviour
+public class VRIKLocomotionController : MonoBehaviour
 {
     [Header("Inputs")]
     public bool Sprint = false;
