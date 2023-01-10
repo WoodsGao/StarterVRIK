@@ -714,7 +714,7 @@ GameObject:
   - component: {fileID: 8443262794282874346}
   - component: {fileID: 8443262794282874343}
   - component: {fileID: 2920446639976822061}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AvatarRoot
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -781,7 +781,7 @@ MonoBehaviour:
     root: {fileID: 0}
     LOD: 0
     scale: 1
-    plantFeet: 1
+    plantFeet: 0
     spine:
       bones: []
       headTarget: {fileID: 0}
@@ -1010,7 +1010,7 @@ MonoBehaviour:
   Movement: {x: 0, y: 0}
   Jump: 0
   XRRig: {fileID: 0}
-  MoveSpeed: 2
+  MoveSpeed: 1
   SprintSpeed: 5.335
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10

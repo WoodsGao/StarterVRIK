@@ -11,6 +11,7 @@ public class VRIKLocomotionController : MonoBehaviour
 
     [Header("XR IK Bindings")]
     public Transform XRRig;
+    private Vector3 _lastXRRigPosition;
 
     [Header("Player")]
     [Tooltip("Move speed of the character in m/s")]
@@ -70,6 +71,8 @@ public class VRIKLocomotionController : MonoBehaviour
     private float _fallTimeoutDelta;
 
     // animation IDs
+    private int _animIDHorizontal;
+    private int _animIDVertical;
     private int _animIDSpeed;
     private int _animIDGrounded;
     private int _animIDJump;
@@ -96,7 +99,8 @@ public class VRIKLocomotionController : MonoBehaviour
     {
         _hasAnimator = TryGetComponent(out _animator);
         _controller = GetComponent<CharacterController>();
-
+        _lastXRRigPosition = XRRig.position;
+        
         AssignAnimationIDs();
 
         // reset our timeouts on start
@@ -119,6 +123,9 @@ public class VRIKLocomotionController : MonoBehaviour
 
     private void AssignAnimationIDs()
     {
+        _animIDHorizontal = Animator.StringToHash("Horizontal");
+        _animIDVertical = Animator.StringToHash("Vertical");
+        
         _animIDSpeed = Animator.StringToHash("Speed");
         _animIDGrounded = Animator.StringToHash("Grounded");
         _animIDJump = Animator.StringToHash("Jump");
@@ -199,17 +206,23 @@ public class VRIKLocomotionController : MonoBehaviour
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         // move the player
-        Vector3 movement = targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+        Vector3 XRdiff = XRRig.position - _lastXRRigPosition;
+        Vector3 motionSpeed = targetDirection.normalized * _speed + XRdiff / Time.deltaTime;
+        Vector3 movement = targetDirection.normalized * (_speed * Time.deltaTime) + 
+                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime + XRdiff;
         Vector3 lastPos = transform.position;
         _controller.Move(movement);
-        XRRig.position += transform.position - lastPos;
+        Vector3 realMovement = transform.position - lastPos;
+        XRRig.position += realMovement;
+        _lastXRRigPosition = XRRig.position;
 
         // update animator if using character
         if (_hasAnimator)
         {
             _animator.SetFloat(_animIDSpeed, _animationBlend);
-            _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+            _animator.SetFloat(_animIDMotionSpeed, _speed);
+            _animator.SetFloat(_animIDHorizontal, motionSpeed.x);
+            _animator.SetFloat(_animIDVertical, motionSpeed.z);
         }
     }
 
